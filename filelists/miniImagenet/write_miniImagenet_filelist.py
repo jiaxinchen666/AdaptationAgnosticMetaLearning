@@ -7,7 +7,7 @@ import random
 import re
 
 cwd = os.getcwd() 
-data_path = join(cwd,'ILSVRC2015/Data/CLS-LOC/train')
+data_path =r"D:\\project\\datasets\\mini-imagenet-raw\\images"
 savedir = './'
 dataset_list = ['base', 'val', 'novel']
 
@@ -32,12 +32,12 @@ for dataset in dataset_list:
             if not label in filelists[dataset]:
                 folderlist.append(label)
                 filelists[dataset][label] = []
-                fnames = listdir( join(data_path, label) )
-                fname_number = [ int(re.split('_|\.', fname)[1]) for fname in fnames]
-                sorted_fnames = list(zip( *sorted(  zip(fnames, fname_number), key = lambda f_tuple: f_tuple[1] )))[0]
+                # fnames = listdir( join(data_path, label) )
+                # fname_number = [ int(re.split('_|\.', fname)[1]) for fname in fnames]
+                # sorted_fnames = list(zip( *sorted(  zip(fnames, fname_number), key = lambda f_tuple: f_tuple[1] )))[0]
                  
-            fid = int(fid[-5:])-1
-            fname = join( data_path,label, sorted_fnames[fid] )
+            # fid = int(fid[-5:])-1
+            fname = data_path+os.sep+os.sep+ fid+".jpg"
             filelists[dataset][label].append(fname)
 
     for key, filelist in filelists[dataset].items():
@@ -45,6 +45,7 @@ for dataset in dataset_list:
         random.shuffle(filelist)
         filelists_flat[dataset] += filelist
         labellists_flat[dataset] += np.repeat(cl, len(filelist)).tolist() 
+##filelists_flat = [base:label1.jpg,laebl2.jpg...., val:...] labellists_flat = {base:[11111111,22222,33]}
 
 for dataset in dataset_list:
     fo = open(savedir + dataset + ".json", "w")
