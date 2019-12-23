@@ -20,7 +20,7 @@ from methods.protonet import ProtoNet
 from methods.matchingnet import MatchingNet
 from methods.relationnet import RelationNet
 from methods.maml import MAML
-from methods.Ours_test import Ours
+from methods.Ours import Ours
 from io_utils import model_dict, parse_args, get_resume_file, get_best_file, get_assigned_file
 
 
@@ -55,7 +55,6 @@ if __name__ == '__main__':
     iter_num = 600
 
     few_shot_params = dict(n_way=params.test_n_way, n_support=params.test_n_shot)
-    # few_shot_params = dict(n_way=params.test_n_way, n_support=5)
 
     if params.dataset in ['omniglot', 'cross_char']:
         assert params.model == 'Conv4' and not params.train_aug, 'omniglot only support Conv4 without augmentation'
@@ -85,30 +84,30 @@ if __name__ == '__main__':
         backbone.SimpleBlock.maml = True
         backbone.BottleneckBlock.maml = True
         backbone.ResNet.maml = True
-        model = MAML(model_dict[params.model], approx=(params.method == 'maml_approx'), test_n_support=params.test_n_shot,**few_shot_params)
-        # model = MAML(model_dict[params.model], approx=(params.method == 'maml_approx'), test_n_support=params.tes,**few_shot_params)
-        model.task_update_num = 5
+
+        model = MAML(model_dict[params.model], approx=(params.method == 'maml_approx'), test_n_support=5,**few_shot_params)
+        model.task_update_num = 3000
+        model.train_lr = 0.1
         if params.dataset in ['omniglot', 'cross_char']:  # maml use different parameter in omniglot
             model.n_task = 32
             model.task_update_num = 1
             model.train_lr = 0.1
     elif params.method == 'Ours':
         model = Ours(model_dict[params.model],
-                     # test_n_support=1, **few_shot_params)
                      test_n_support=params.test_n_shot, **few_shot_params)
     else:
         raise ValueError('Unknown method')
 
     model = model.cuda()
 
-    checkpoint_dir = '%s/checkpoints/ensemble/%s/%s_%s' % (configs.save_dir, params.dataset, params.model, params.method)
+    checkpoint_dir = '%s/checkpoints/%s/%s_%s' % (configs.save_dir, params.dataset, params.model, params.method)
     if params.train_aug:
         checkpoint_dir += '_aug'
     if not params.method in ['baseline', 'baseline++']:
-        # checkpoint_dir += '_%dway_%dtrainshot_%dtestshot' % (
-        #     params.train_n_way, params.n_shot, params.test_n_shot)
         checkpoint_dir += '_%dtrway_%dtstway_%dtrainshot_%dtestshot' % (
             params.train_n_way, params.test_n_way, params.n_shot, params.test_n_shot)
+        print("loading model in")
+        print(checkpoint_dir)
 
     # modelfile   = get_resume_file(checkpoint_dir)
 
@@ -116,8 +115,6 @@ if __name__ == '__main__':
         if params.save_iter != -1:
             modelfile = get_assigned_file(checkpoint_dir, params.save_iter)
         else:
-            print("loading model in")
-            print(checkpoint_dir)
             modelfile = get_best_file(checkpoint_dir)
         if modelfile is not None:
             tmp = torch.load(modelfile)
@@ -128,7 +125,7 @@ if __name__ == '__main__':
         split_str = split + "_" + str(params.save_iter)
     else:
         split_str = split
-    if params.method in ['maml', 'maml_approx', "Ours"]:  # maml do not support testing with feature
+    if params.method in ['maml', 'maml_approx']:  # maml do not support testing with feature
         if 'Conv' in params.model:
             if params.dataset in ['omniglot', 'cross_char']:
                 image_size = 28
@@ -144,8 +141,6 @@ if __name__ == '__main__':
                 loadfile = configs.data_dir['miniImagenet'] + 'all.json'
             else:
                 loadfile = configs.data_dir['CUB'] + split + '.json'
-                print("loading file ")
-                print(loadfile)
         elif params.dataset == 'cross_char':
             if split == 'base':
                 loadfile = configs.data_dir['omniglot'] + 'noLatin.json'

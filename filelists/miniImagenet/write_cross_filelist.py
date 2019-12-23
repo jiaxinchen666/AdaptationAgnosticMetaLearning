@@ -6,8 +6,9 @@ import json
 import random
 import re
 
-cwd = os.getcwd() 
-data_path = join(cwd,'ILSVRC2015/Data/CLS-LOC/train')
+# cwd = os.getcwd()
+# data_path = r"D:\\project\\datasets\\mini-imagenet-raw\\images"
+data_path =r"/data/dataset/ImageNet/mini_images"
 savedir = './'
 dataset_list = ['base', 'val', 'novel']
 
@@ -32,12 +33,14 @@ for dataset in dataset_list:
             if not label in filelists[dataset]:
                 folderlist.append(label)
                 filelists[dataset][label] = []
-                fnames = listdir( join(data_path, label) )
-                fname_number = [ int(re.split('_|\.', fname)[1]) for fname in fnames]
-                sorted_fnames = list(zip( *sorted(  zip(fnames, fname_number), key = lambda f_tuple: f_tuple[1] )))[0]
+                # fnames = listdir( join(data_path, label) )
+                # fname_number = [ int(re.split('_|\.', fname)[1]) for fname in fnames]
+                # sorted_fnames = list(zip( *sorted(  zip(fnames, fname_number), key = lambda f_tuple: f_tuple[1] )))[0]
                  
-            fid = int(fid[-5:])-1
-            fname = join( data_path,label, sorted_fnames[fid] )
+            # fid = int(fid[-5:])-1
+            # fname = data_path + os.sep + os.sep + fid + ".jpg"
+            # fname = join( data_path,label, sorted_fnames[fid] )
+            fname = data_path + os.sep + fid + ".jpg"
             filelists[dataset][label].append(fname)
 
     for key, filelist in filelists[dataset].items():

@@ -17,7 +17,7 @@ from methods.protonet import ProtoNet
 from methods.matchingnet import MatchingNet
 from methods.relationnet import RelationNet
 from methods.maml import MAML
-from methods.Ours_test import Ours
+from methods.Ours import Ours
 from io_utils import model_dict, parse_args, get_resume_file
 
 
@@ -36,7 +36,7 @@ def train(base_loader, val_loader, model, optimization, start_epoch, stop_epoch,
         model.train_loop(epoch, base_loader, optimizer)  # model are called by reference, no need to return
         train_end = time.time()
         print("train time")
-        print(train_end - train_start)
+        print(train_end-train_start)
         model.eval()
 
         if not os.path.isdir(params.checkpoint_dir):
@@ -46,7 +46,7 @@ def train(base_loader, val_loader, model, optimization, start_epoch, stop_epoch,
         acc = model.test_loop(val_loader)
         test_end = time.time()
         print("test time")
-        print(test_end - test_start)
+        print(test_end-test_start)
         train_log["test_acc"].append(acc)
         torch.save(train_log, os.path.join(params.checkpoint_dir, 'trlog'))
 
@@ -127,7 +127,7 @@ if __name__ == '__main__':
 
     elif params.method in ['protonet', 'matchingnet', 'relationnet', 'relationnet_softmax', 'maml', 'maml_approx', "Ours"]:
         n_query = max(1, int(
-            12 * params.test_n_way / params.train_n_way))  # if test_n_way is smaller than train_n_way, reduce n_query to keep batch size small
+            16 * params.test_n_way / params.train_n_way))  # if test_n_way is smaller than train_n_way, reduce n_query to keep batch size small
 
         train_few_shot_params = dict(n_way=params.train_n_way, n_support=params.n_shot)
         ## TODO  dataloader for train and val
@@ -174,25 +174,24 @@ if __name__ == '__main__':
 
     model = model.cuda()
 
-    params.checkpoint_dir = '%s/checkpoints_test/%s/%s_%s' % (configs.save_dir, params.dataset, params.model, params.method)
+    params.checkpoint_dir = '%s/checkpoints/%s/%s_%s' % (configs.save_dir, params.dataset, params.model, params.method)
     if params.train_aug:
         params.checkpoint_dir += '_aug'
     if not params.method in ['baseline', 'baseline++']:
-        # params.checkpoint_dir += '_%dtway_%dtway_%dtrainshot_%dtestshot' % (
-        # params.train_n_way, params.test_n_way, params.n_shot, params.test_n_shot)
-        params.checkpoint_dir += '_%dway_%dtrainshot_%dtestshot' % (
-        params.train_n_way,  params.n_shot, params.test_n_shot)
+        params.checkpoint_dir += '_%dtrway_%dtstway_%dtrainshot_%dtestshot' % (
+          params.train_n_way, params.test_n_way, params.n_shot, params.test_n_shot)
+       # params.checkpoint_dir += '_%dway_%dtrainshot_%dtestshot' % (
+       # params.train_n_way, params.n_shot, params.test_n_shot)
 
     if not os.path.isdir(params.checkpoint_dir):
         os.makedirs(params.checkpoint_dir)
 
     start_epoch = params.start_epoch
     stop_epoch = params.stop_epoch
-    if params.method == 'maml' or params.method == 'maml_approx'  or params.method=="Ours":
+    if params.method == 'maml' or params.method == 'maml_approx' or params.method=="Ours":
         stop_epoch = params.stop_epoch * model.n_task  # maml use multiple tasks in one update
 
     if params.resume:
-        print(params.checkpoint_dir)
         resume_file = get_resume_file(params.checkpoint_dir)
         if resume_file is not None:
             tmp = torch.load(resume_file)

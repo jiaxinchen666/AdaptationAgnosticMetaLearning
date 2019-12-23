@@ -19,7 +19,7 @@ class MAML(MetaTemplate):
         self.classifier = backbone.Linear_fw(self.feat_dim, n_way)
         self.classifier.bias.data.fill_(0)
 
-        self.n_task = 4
+        self.n_task = 1
         self.task_update_num = 5
         self.train_lr = 0.01
         self.approx = approx  # first order approx.
@@ -103,11 +103,11 @@ class MAML(MetaTemplate):
                 print('Epoch {:d} | Batch {:d}/{:d} | Loss {:f}'.format(epoch, i, len(train_loader),
                                                                         avg_loss / float(i + 1)))
 
-                for ii, task in enumerate(inner_loss_list):
-                    print("task" + str(ii) + str(task))
+                # for ii, task in enumerate(inner_loss_list):
+                #     print("task" + str(ii) + str(task))
 
             if task_count == self.n_task:  # MAML update several tasks at one time
-                print("out loop optimizing")
+                # print("out loop optimizing")
                 inner_loss_list = []
                 loss_q = torch.stack(loss_all).sum(0)
                 loss_q.backward()

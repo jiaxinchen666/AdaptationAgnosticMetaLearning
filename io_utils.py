@@ -18,17 +18,17 @@ model_dict = dict(
 def parse_args(script):
     parser = argparse.ArgumentParser(description='few-shot script %s' % (script))
     parser.add_argument('--dataset', default='miniImagenet', help='CUB/miniImagenet/cross/omniglot/cross_char')
-    parser.add_argument('--model', default='Conv4',
+    parser.add_argument('--model', default='ResNet18',
                         help='model: Conv{4|6} / ResNet{10|18|34|50|101}')  # 50 and 101 are not used in the paper
-    parser.add_argument('--method', default='maml_approx',
-                        help='baseline/baseline++/protonet/matchingnet/relationnet{_softmax}/maml{_approx}')  # relationnet_softmax replace L2 norm with softmax to expedite training, maml_approx use first-order approximation in the gradient for efficiency
+    parser.add_argument('--method', default='Ours',
+                        help='Ours/baseline/baseline++/protonet/matchingnet/relationnet{_softmax}/maml{_approx}')  # relationnet_softmax replace L2 norm with softmax to expedite training, maml_approx use first-order approximation in the gradient for efficiency
     parser.add_argument('--train_n_way', default=5, type=int,
                         help='class num to classify for training')  # baseline and baseline++ would ignore this parameter
     parser.add_argument('--test_n_way', default=5, type=int,
                         help='class num to classify for testing (validation) ')  # baseline and baseline++ only use this parameter in finetuning
-    parser.add_argument('--n_shot', default=15, type=int,
+    parser.add_argument('--n_shot', default=1, type=int,
                         help='number of labeled data in each class, same as n_support')
-    parser.add_argument('--test_n_shot', default=5, type=int,
+    parser.add_argument('--test_n_shot', default=1, type=int,
                         help='number of labeled data in each class, same as n_support')  # baseline and baseline++ only use this parameter in finetuning
     parser.add_argument('--train_aug', default=True,type=bool,
                         help='perform data augmentation or not during training ')  # still required for save_features.py and test.py to find the model path correctly
@@ -40,7 +40,7 @@ def parse_args(script):
         parser.add_argument('--start_epoch', default=0, type=int, help='Starting epoch')
         parser.add_argument('--stop_epoch', default=-1, type=int,
                             help='Stopping epoch')  # for meta-learning methods, each epoch contains 100 episodes. The default epoch number is dataset dependent. See train.py
-        parser.add_argument('--resume', action='store_true',
+        parser.add_argument('--resume', default=True,type=bool,
                             help='continue from previous trained model with largest epoch')
         parser.add_argument('--warmup', action='store_true',
                             help='continue from baseline, neglected if resume is true')  # never used in the paper

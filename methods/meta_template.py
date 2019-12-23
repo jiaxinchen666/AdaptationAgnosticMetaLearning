@@ -44,7 +44,7 @@ class MetaTemplate(nn.Module):
         return z_support, z_query
 
     def correct(self, x):
-        scores,_ = self.set_forward(x)
+        scores, _= self.set_forward(x)
         y_query = np.repeat(range(self.n_way), self.n_query)
 
         topk_scores, topk_labels = scores.data.topk(1, 1, True, True)
@@ -64,7 +64,7 @@ class MetaTemplate(nn.Module):
             loss = self.set_forward_loss(x)
             loss.backward()
             optimizer.step()
-            avg_loss = avg_loss + loss.data[0]
+            avg_loss = avg_loss + loss.item()
 
             if i % print_freq == 0:
                 # print(optimizer.state_dict()['param_groups'][0]['lr'])

@@ -6,8 +6,9 @@ import json
 import random
 import re
 
-cwd = os.getcwd() 
-data_path =r"D:\\project\\datasets\\mini-imagenet-raw\\images"
+cwd = os.getcwd()
+data_path =r"D:\\project\\datasets\\mini-imagenet-raw\\images" # for windows
+# data_path =r"/data/dataset/ImageNet/mini_images/" #path to imni image datasets for linux
 savedir = './'
 dataset_list = ['base', 'val', 'novel']
 
@@ -38,6 +39,7 @@ for dataset in dataset_list:
                  
             # fid = int(fid[-5:])-1
             fname = data_path+os.sep+os.sep+ fid+".jpg"
+            # fname = data_path+os.sep+fid+".jpg"
             filelists[dataset][label].append(fname)
 
     for key, filelist in filelists[dataset].items():
