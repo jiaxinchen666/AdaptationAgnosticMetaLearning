@@ -1,19 +1,7 @@
 # Adaptation-Agnostic Meta-Training
 
-This repo contains the reference source code for the paper [A Closer Look at Few-shot Classification](https://openreview.net/pdf?id=HkxLXnAcFQ) in International Conference on Learning Representations (ICLR 2019). In this project, we provide a integrated testbed for a detailed empirical study for few-shot classification.
+This repo contains the reference source code for the paper [Adaptation-agnostic meta-training](https://openreview.net/forum?id=rQn1fBeMP_) in International Conference on Machine Learning (ICML 2021). In this project, we provide a integrated testbed for a detailed empirical study for few-shot classification.
 
-
-## Citation
-If you find our code useful, please consider citing our work using the bibtex:
-```
-@inproceedings{
-chen2019closerfewshot,
-title={A Closer Look at Few-shot Classification},
-author={Chen, Wei-Yu and Liu, Yen-Cheng and Kira, Zsolt and Wang, Yu-Chiang and  Huang, Jia-Bin},
-booktitle={International Conference on Learning Representations},
-year={2019}
-}
-```
 
 ## Enviroment
  - Python3
